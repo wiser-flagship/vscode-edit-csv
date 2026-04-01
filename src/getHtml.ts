@@ -627,6 +627,11 @@ export function createEditorHtml(webview: vscode.Webview, context: vscode.Extens
 									</span>
 								</div>
 
+								<div class="menu-item" onclick="validateLayout()">
+									<span slot="start" class="icon is-small"><i class="fas fa-check-circle"></i></span>
+									<span>WISER-CEDAR: Validate Layout</span>
+								</div>
+
 							</div>
 						</div>
 

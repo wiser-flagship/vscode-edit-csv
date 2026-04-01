@@ -543,6 +543,33 @@ function createNewEditorInstance(context: vscode.ExtensionContext, activeTextEdi
 				break
 			}
 
+			case "validateLayout": {
+				const { headers } = message
+				const workspaceFolders = vscode.workspace.workspaceFolders
+				if (!workspaceFolders || workspaceFolders.length === 0) {
+					vscode.window.showErrorMessage('WISER-CEDAR: Cannot validate layout — no workspace folder is open.')
+					break
+				}
+				const interfacePath = path.join(workspaceFolders[0].uri.fsPath, 'processing', 'in', 'interface', 'AS-interface.csv')
+				vscode.workspace.fs.readFile(vscode.Uri.file(interfacePath)).then(
+					(content) => {
+						const firstLine = Buffer.from(content).toString('utf-8').split(/\r?\n/)[0]
+						const interfaceHeaders = firstLine.split(',').map(h => h.trim())
+						const fileHeaderSet = new Set(headers.map(h => h.trim()))
+						const missingHeaders = interfaceHeaders.filter(h => !fileHeaderSet.has(h))
+						if (missingHeaders.length === 0) {
+							vscode.window.showInformationMessage('WISER-CEDAR: Layout is valid. All required headers are present.')
+						} else {
+							vscode.window.showErrorMessage(`WISER-CEDAR: Layout is invalid. Missing headers: ${missingHeaders.join(', ')}`)
+						}
+					},
+					(err) => {
+						vscode.window.showErrorMessage(`WISER-CEDAR: Could not read interface file at "${interfacePath}": ${err?.message}`)
+					}
+				)
+				break
+			}
+
 			//this only works for vs extension and also asks the user for permission...
 			// case 'openUrl': {
 			// 	//from https://github.com/microsoft/vscode/issues/9651

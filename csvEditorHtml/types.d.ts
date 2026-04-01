@@ -610,6 +610,11 @@ type SetMultipleCursorsMessage = {
 	positions: FilePosition[]
 }
 
+type ValidateLayoutMessage = {
+	command: 'validateLayout'
+	headers: string[]
+}
+
 type CursorsPosition = {
 	startLine: number
 	startColumn: number
@@ -623,7 +628,7 @@ type FilePosition = {
 	endPos: number
 }
 
-type PostMessage = ReadyMessage | DisplayMessageBoxMessage | OverwriteFileMessage | CopyToClipboardMessage | SetEditorHasChangesMessage | SetMultipleCursorsMessage
+type PostMessage = ReadyMessage | DisplayMessageBoxMessage | OverwriteFileMessage | CopyToClipboardMessage | SetEditorHasChangesMessage | SetMultipleCursorsMessage | ValidateLayoutMessage
 
 type VsState = {
 	readOptionIsCollapsed: boolean

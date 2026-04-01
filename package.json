@@ -848,7 +848,7 @@
 	},
 	"scripts": {
 		"preinstall": "npx npm-force-resolutions",
-		"vscode:prepublish": "npm audit && npm run compile && npm run testFe && npm run promptUp",
+		"vscode:prepublish": "npm audit --omit=dev && npm run compile && npm run testFe && npm run promptUp",
 		"compile": "npx tsc -p ./ && tsc -p ./csvEditorHtml/tsconfig.json",
 		"watch": "npx tsc -watch -p ./",
 		"watchEditor": "npx tsc -w -p ./csvEditorHtml/tsconfig.json",
@@ -882,7 +882,8 @@
 		"fs-extra": "9.0.1",
 		"glob": "7.1.6",
 		"iconv-lite": "0.6.2",
-		"jsdom": "28.1.0",
+		"jsdom": "^29.0.1",
+		"mocha": "11.0.1",
 		"playwright": "1.56.1",
 		"readline-sync": "1.4.10",
 		"sweetalert2": "9.17.2",

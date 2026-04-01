@@ -3397,3 +3397,24 @@ function __changeTableContentZoom(newScalerFinal: number) {
 
 	debouncedTableReRender()
 }
+
+function validateLayout() {
+	if (!vscode) return
+
+	if (!headerRowWithIndex) {
+		const msg: DisplayMessageBoxMessage = {
+			command: 'msgBox',
+			type: 'warn',
+			content: 'WISER-CEDAR: Cannot validate layout — no header row found in the current file. Make sure "Has header" is enabled.',
+		}
+		vscode.postMessage(msg)
+		return
+	}
+
+	const headers = headerRowWithIndex.row.map(h => (h !== null ? h : ''))
+	const validateMsg: ValidateLayoutMessage = {
+		command: 'validateLayout',
+		headers,
+	}
+	vscode.postMessage(validateMsg)
+}
