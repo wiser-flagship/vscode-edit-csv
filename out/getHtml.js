@@ -637,6 +637,13 @@ function createEditorHtml(webview, context, config, initialVars) {
 			</div>
 
 
+			<!-- WISER-CEDAR validation result banner -->
+			<div id="validation-banner" style="display:none; background:#ffcccc; border-bottom:2px solid #cc0000; color:#7a0000; padding:6px 12px; font-size:0.9em; align-items:center; gap:8px; flex-wrap:wrap;">
+				<span style="font-weight:bold;"><i class="fas fa-exclamation-triangle"></i>&nbsp;WISER-CEDAR &ndash; Missing required headers:</span>
+				<span id="validation-banner-headers" style="flex:1; font-family:monospace;"></span>
+				<span onclick="closeValidationBanner()" style="cursor:pointer; font-weight:bold; padding:0 6px; font-size:1.1em;">&#x2715;</span>
+			</div>
+
 			<!-- main editor/grid area -->
 			<div class="side-paneled">
 				<div id="side-panel" class="side-panel">

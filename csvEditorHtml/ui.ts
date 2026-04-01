@@ -3398,26 +3398,21 @@ function __changeTableContentZoom(newScalerFinal: number) {
 	debouncedTableReRender()
 }
 
-let _validationMissingHeaders: Set<string> = new Set()
-let _validationHookAdded = false
-
-function _afterGetColHeaderValidation(col: number, TH: HTMLElement) {
-	const colName = (headerRowWithIndex?.row[col] ?? '') as string
-	if (_validationMissingHeaders.size > 0 && _validationMissingHeaders.has(colName.trim())) {
-		TH.style.backgroundColor = '#ffcccc'
+function applyValidationResult(missingHeaders: string[]) {
+	const banner = document.getElementById('validation-banner')
+	const headersSpan = document.getElementById('validation-banner-headers')
+	if (!banner || !headersSpan) return
+	if (missingHeaders.length === 0) {
+		banner.style.display = 'none'
 	} else {
-		TH.style.backgroundColor = ''
+		headersSpan.textContent = missingHeaders.join(', ')
+		banner.style.display = 'flex'
 	}
 }
 
-function applyValidationResult(missingHeaders: string[]) {
-	_validationMissingHeaders = new Set(missingHeaders.map(h => h.trim()))
-	if (!hot) return
-	if (!_validationHookAdded) {
-		hot.addHook('afterGetColHeader', _afterGetColHeaderValidation as any)
-		_validationHookAdded = true
-	}
-	hot.render()
+function closeValidationBanner() {
+	const banner = document.getElementById('validation-banner')
+	if (banner) banner.style.display = 'none'
 }
 
 function validateLayout() {
