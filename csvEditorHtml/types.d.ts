@@ -571,7 +571,12 @@ type SourceFileChangedMessage = {
 	command: 'sourceFileChanged'
 }
 
-type ReceivedMessageFromVsCode = CsvUpdateMessage | RequestApplyPressMessage | RequestApplyAndSavePressMessage | RequestChangeFontSiteInPxMessage | SourceFileChangedMessage
+type ValidationResultMessage = {
+	command: 'validationResult'
+	missingHeaders: string[]
+}
+
+type ReceivedMessageFromVsCode = CsvUpdateMessage | RequestApplyPressMessage | RequestApplyAndSavePressMessage | RequestChangeFontSiteInPxMessage | SourceFileChangedMessage | ValidationResultMessage
 
 /**
  * send by the webview indicating that it has rendered and the webview has set up the listener to receive content

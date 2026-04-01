@@ -3398,6 +3398,28 @@ function __changeTableContentZoom(newScalerFinal: number) {
 	debouncedTableReRender()
 }
 
+let _validationMissingHeaders: Set<string> = new Set()
+let _validationHookAdded = false
+
+function _afterGetColHeaderValidation(col: number, TH: HTMLElement) {
+	const colName = (headerRowWithIndex?.row[col] ?? '') as string
+	if (_validationMissingHeaders.size > 0 && _validationMissingHeaders.has(colName.trim())) {
+		TH.style.backgroundColor = '#ffcccc'
+	} else {
+		TH.style.backgroundColor = ''
+	}
+}
+
+function applyValidationResult(missingHeaders: string[]) {
+	_validationMissingHeaders = new Set(missingHeaders.map(h => h.trim()))
+	if (!hot) return
+	if (!_validationHookAdded) {
+		hot.addHook('afterGetColHeader', _afterGetColHeaderValidation as any)
+		_validationHookAdded = true
+	}
+	hot.render()
+}
+
 function validateLayout() {
 	if (!vscode) return
 

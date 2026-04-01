@@ -562,6 +562,11 @@ function createNewEditorInstance(context: vscode.ExtensionContext, activeTextEdi
 						} else {
 							vscode.window.showErrorMessage(`WISER-CEDAR: Layout is invalid. Missing headers: ${missingHeaders.join(', ')}`)
 						}
+						const resultMsg: ValidationResultMessage = {
+							command: 'validationResult',
+							missingHeaders,
+						}
+						panel.webview.postMessage(resultMsg)
 					},
 					(err) => {
 						vscode.window.showErrorMessage(`WISER-CEDAR: Could not read interface file at "${interfacePath}": ${err?.message}`)

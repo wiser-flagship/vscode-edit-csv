@@ -539,6 +539,11 @@ function handleVsCodeMessage(event: { data: ReceivedMessageFromVsCode }) {
 			break
 		}
 
+		case 'validationResult': {
+			applyValidationResult(message.missingHeaders)
+			break
+		}
+
 		default: {
 			_error('received unknown message from vs code')
 			notExhaustiveSwitch(message)
