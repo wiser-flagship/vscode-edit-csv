@@ -3400,19 +3400,24 @@ function __changeTableContentZoom(newScalerFinal: number) {
 
 function applyValidationResult(missingHeaders: string[]) {
 	const banner = document.getElementById('validation-banner')
+	const bannerValid = document.getElementById('validation-banner-valid')
 	const headersSpan = document.getElementById('validation-banner-headers')
-	if (!banner || !headersSpan) return
+	if (!banner || !bannerValid || !headersSpan) return
 	if (missingHeaders.length === 0) {
 		banner.style.display = 'none'
+		bannerValid.style.display = 'flex'
 	} else {
 		headersSpan.textContent = missingHeaders.join(', ')
 		banner.style.display = 'flex'
+		bannerValid.style.display = 'none'
 	}
 }
 
 function closeValidationBanner() {
 	const banner = document.getElementById('validation-banner')
+	const bannerValid = document.getElementById('validation-banner-valid')
 	if (banner) banner.style.display = 'none'
+	if (bannerValid) bannerValid.style.display = 'none'
 }
 
 function validateLayout() {
