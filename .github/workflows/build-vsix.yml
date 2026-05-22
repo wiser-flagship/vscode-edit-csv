@@ -12,6 +12,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout
@@ -37,7 +39,7 @@ jobs:
 
       - name: Get VSIX filename
         id: vsix
-        run: echo "file=$(ls *.vsix)" >> "$GITHUB_OUTPUT"
+        run: echo "file=$(ls *.vsix | head -n 1)" >> "$GITHUB_OUTPUT"
 
       - name: Upload VSIX artifact
         uses: actions/upload-artifact@v4
