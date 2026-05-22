@@ -30,6 +30,9 @@ jobs:
       - name: Compile TypeScript
         run: npm run compile
 
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
       - name: Run front-end tests
         run: npm run testFe
 
