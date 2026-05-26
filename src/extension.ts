@@ -545,33 +545,80 @@ function createNewEditorInstance(context: vscode.ExtensionContext, activeTextEdi
 
 			case "validateLayout": {
 				const { headers } = message
-				const workspaceFolders = vscode.workspace.workspaceFolders
-				if (!workspaceFolders || workspaceFolders.length === 0) {
-					vscode.window.showErrorMessage('WISER-CEDAR: Cannot validate layout — no workspace folder is open.')
+				const serviceUrl = vscode.workspace.getConfiguration('editCsv').get<string>('wiserCedarValidatorUrl', 'http://localhost:8000')
+				fetch(`${serviceUrl}/layout`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ headers, interface_name: 'AS' }),
+				})
+				.then(res => {
+					if (!res.ok) throw new Error(`HTTP ${res.status}`)
+					return res.json() as Promise<{ valid: boolean; missing_headers: string[] }>
+				})
+				.then(data => {
+					const missingHeaders = data.missing_headers
+					if (missingHeaders.length === 0) {
+						vscode.window.showInformationMessage('WISER-CEDAR: Layout is valid. All required headers are present.')
+					} else {
+						vscode.window.showErrorMessage(`WISER-CEDAR: Layout is invalid. Missing headers: ${missingHeaders.join(', ')}`)
+					}
+					const resultMsg: ValidationResultMessage = { command: 'validationResult', missingHeaders }
+					panel.webview.postMessage(resultMsg)
+				})
+				.catch((err: Error) => {
+					vscode.window.showErrorMessage(`WISER-CEDAR: Could not reach Validator Service at "${serviceUrl}": ${err.message}`)
+				})
+				break
+			}
+
+			case "validateConcept": {
+				const { concept, row, col } = message
+				const serviceUrl = vscode.workspace.getConfiguration('editCsv').get<string>('wiserCedarValidatorUrl', 'http://localhost:8000')
+				fetch(`${serviceUrl}/concept`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ concept }),
+				})
+				.then(res => {
+					if (!res.ok) throw new Error(`HTTP ${res.status}`)
+					return res.json() as Promise<{ found: boolean; match: string | null; candidates: { label: string; score: number }[] }>
+				})
+				.then(data => {
+					const resultMsg: ConceptValidationResultMessage = {
+						command: 'conceptValidationResult',
+						found: data.found,
+						match: data.match,
+						candidates: data.candidates ?? [],
+						concept,
+						row,
+						col,
+					}
+					panel.webview.postMessage(resultMsg)
+				})
+				.catch(() => {
+					// silently ignore when the Validator Service is not running
+				})
+				break
+			}
+
+			case 'startValidatorService': {
+				const terminalName = 'WISER Validator Service'
+				const existing = vscode.window.terminals.find(t => t.name === terminalName)
+				if (existing) {
+					existing.show()
+					vscode.window.showInformationMessage('WISER-CEDAR: Validator Service terminal is already open.')
 					break
 				}
-				const interfacePath = path.join(workspaceFolders[0].uri.fsPath, 'processing', 'in', 'interface', 'AS-interface.csv')
-				vscode.workspace.fs.readFile(vscode.Uri.file(interfacePath)).then(
-					(content) => {
-						const firstLine = Buffer.from(content).toString('utf-8').split(/\r?\n/)[0]
-						const interfaceHeaders = firstLine.split(',').map(h => h.trim())
-						const fileHeaderSet = new Set(headers.map(h => h.trim()))
-						const missingHeaders = interfaceHeaders.filter(h => !fileHeaderSet.has(h))
-						if (missingHeaders.length === 0) {
-							vscode.window.showInformationMessage('WISER-CEDAR: Layout is valid. All required headers are present.')
-						} else {
-							vscode.window.showErrorMessage(`WISER-CEDAR: Layout is invalid. Missing headers: ${missingHeaders.join(', ')}`)
-						}
-						const resultMsg: ValidationResultMessage = {
-							command: 'validationResult',
-							missingHeaders,
-						}
-						panel.webview.postMessage(resultMsg)
-					},
-					(err) => {
-						vscode.window.showErrorMessage(`WISER-CEDAR: Could not read interface file at "${interfacePath}": ${err?.message}`)
-					}
-				)
+				const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath
+				const serviceUrl = vscode.workspace.getConfiguration('editCsv').get<string>('wiserCedarValidatorUrl', 'http://localhost:8000')
+				const port = new URL(serviceUrl).port || '8000'
+				const terminal = vscode.window.createTerminal({
+					name: terminalName,
+					cwd: workspaceRoot,
+					shellPath: '/bin/bash',
+					shellArgs: ['-c', `uv run uvicorn tools.validator.app:app --host localhost --port ${port}; exec bash`],
+				})
+				terminal.show()
 				break
 			}
 

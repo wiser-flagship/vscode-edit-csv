@@ -576,7 +576,22 @@ type ValidationResultMessage = {
 	missingHeaders: string[]
 }
 
-type ReceivedMessageFromVsCode = CsvUpdateMessage | RequestApplyPressMessage | RequestApplyAndSavePressMessage | RequestChangeFontSiteInPxMessage | SourceFileChangedMessage | ValidationResultMessage
+type ConceptCandidate = {
+	label: string
+	score: number
+}
+
+type ConceptValidationResultMessage = {
+	command: 'conceptValidationResult'
+	found: boolean
+	match: string | null
+	candidates: ConceptCandidate[]
+	concept: string
+	row: number
+	col: number
+}
+
+type ReceivedMessageFromVsCode = CsvUpdateMessage | RequestApplyPressMessage | RequestApplyAndSavePressMessage | RequestChangeFontSiteInPxMessage | SourceFileChangedMessage | ValidationResultMessage | ConceptValidationResultMessage
 
 /**
  * send by the webview indicating that it has rendered and the webview has set up the listener to receive content
@@ -620,6 +635,17 @@ type ValidateLayoutMessage = {
 	headers: string[]
 }
 
+type ValidateConceptMessage = {
+	command: 'validateConcept'
+	concept: string
+	row: number
+	col: number
+}
+
+type StartValidatorServiceMessage = {
+	command: 'startValidatorService'
+}
+
 type CursorsPosition = {
 	startLine: number
 	startColumn: number
@@ -633,7 +659,7 @@ type FilePosition = {
 	endPos: number
 }
 
-type PostMessage = ReadyMessage | DisplayMessageBoxMessage | OverwriteFileMessage | CopyToClipboardMessage | SetEditorHasChangesMessage | SetMultipleCursorsMessage | ValidateLayoutMessage
+type PostMessage = ReadyMessage | DisplayMessageBoxMessage | OverwriteFileMessage | CopyToClipboardMessage | SetEditorHasChangesMessage | SetMultipleCursorsMessage | ValidateLayoutMessage | ValidateConceptMessage | StartValidatorServiceMessage
 
 type VsState = {
 	readOptionIsCollapsed: boolean

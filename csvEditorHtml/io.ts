@@ -544,6 +544,11 @@ function handleVsCodeMessage(event: { data: ReceivedMessageFromVsCode }) {
 			break
 		}
 
+		case 'conceptValidationResult': {
+			applyConceptValidationResult(message.found, message.match, message.candidates, message.concept)
+			break
+		}
+
 		default: {
 			_error('received unknown message from vs code')
 			notExhaustiveSwitch(message)

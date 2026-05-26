@@ -2162,6 +2162,16 @@ function onAnyChange(changes?: CellChanges[] | null, reason?: string) {
 		//handsontable even emits an event if the value stayed the same...
 		const hasChanges = changes.some(p => p[2] !== p[3])
 		if (!hasChanges) return
+
+		if (headerRowWithIndex && vscode) {
+			for (const [row, col, , newVal] of changes) {
+				if (!newVal || typeof col !== 'number') continue
+				const header = headerRowWithIndex.row[col]
+				if (header && typeof header === 'string' && header.trim().startsWith('WISER ModellingConcept')) {
+					validateConcept(String(newVal), row, col)
+				}
+			}
+		}
 	}
 
 
@@ -3439,4 +3449,47 @@ function validateLayout() {
 		headers,
 	}
 	vscode.postMessage(validateMsg)
+}
+
+function validateConcept(concept: string, row: number, col: number) {
+	if (!vscode || !concept.trim()) return
+	const msg: ValidateConceptMessage = {
+		command: 'validateConcept',
+		concept: concept.trim(),
+		row,
+		col,
+	}
+	vscode.postMessage(msg)
+}
+
+function startValidatorService() {
+	if (!vscode) return
+	const msg: StartValidatorServiceMessage = { command: 'startValidatorService' }
+	vscode.postMessage(msg)
+}
+
+function applyConceptValidationResult(found: boolean, _match: string | null, candidates: ConceptCandidate[], concept: string) {
+	const banner = document.getElementById('concept-banner')
+	if (!banner) return
+	if (found) {
+		banner.style.display = 'none'
+	} else {
+		const span = document.getElementById('concept-banner-term')
+		if (span) span.textContent = concept
+		const candidatesSpan = document.getElementById('concept-banner-candidates')
+		if (candidatesSpan) {
+			if (candidates && candidates.length > 0) {
+				candidatesSpan.textContent = 'Did you mean: ' + candidates.map(c => c.label).join(', ') + '?'
+				candidatesSpan.style.display = 'inline'
+			} else {
+				candidatesSpan.style.display = 'none'
+			}
+		}
+		banner.style.display = 'flex'
+	}
+}
+
+function closeConceptBanner() {
+	const banner = document.getElementById('concept-banner')
+	if (banner) banner.style.display = 'none'
 }

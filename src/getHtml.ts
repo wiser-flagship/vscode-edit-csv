@@ -632,6 +632,11 @@ export function createEditorHtml(webview: vscode.Webview, context: vscode.Extens
 									<span>WISER-CEDAR: Validate Layout</span>
 								</div>
 
+								<div class="menu-item" onclick="startValidatorService()">
+									<span slot="start" class="icon is-small"><i class="fas fa-play-circle"></i></span>
+									<span>WISER-CEDAR: Start Validator</span>
+								</div>
+
 							</div>
 						</div>
 
@@ -658,6 +663,13 @@ export function createEditorHtml(webview: vscode.Webview, context: vscode.Extens
 				<span style="font-weight:bold;"><i class="fas fa-exclamation-triangle"></i>&nbsp;WISER-CEDAR &ndash; Missing required headers:</span>
 				<span id="validation-banner-headers" style="flex:1; font-family:monospace;"></span>
 				<span onclick="closeValidationBanner()" style="cursor:pointer; font-weight:bold; padding:0 6px; font-size:1.1em;">&#x2715;</span>
+			</div>
+			<!-- WISER-CEDAR concept validation banner (not found in KG) -->
+			<div id="concept-banner" style="display:none; background:#fff3cd; border-bottom:2px solid #cc8800; color:#664400; padding:6px 12px; font-size:0.9em; align-items:center; gap:8px; flex-wrap:wrap;">
+				<span style="font-weight:bold;"><i class="fas fa-exclamation-circle"></i>&nbsp;WISER-CEDAR &ndash; Concept not found in Knowledge Graph:</span>
+				<span id="concept-banner-term" style="font-family:monospace;"></span>
+				<span id="concept-banner-candidates" style="display:none; flex:1; font-style:italic;"></span>
+				<span onclick="closeConceptBanner()" style="cursor:pointer; font-weight:bold; padding:0 6px; font-size:1.1em;">&#x2715;</span>
 			</div>
 
 			<!-- main editor/grid area -->
