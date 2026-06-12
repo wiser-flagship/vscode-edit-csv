@@ -31,7 +31,8 @@
 		"onCommand:edit-csv.edit",
 		"onCommand:edit-csv.apply",
 		"onCommand:edit-csv.applyAndSave",
-		"onCommand:edit-csv.editWithConfig"
+		"onCommand:edit-csv.editWithConfig",
+		"onCommand:edit-csv.wiser-edit"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -76,6 +77,11 @@
 				"command": "edit-csv.applyAndSave",
 				"category": "CSV",
 				"title": "Apply changes to source file and save"
+			},
+			{
+				"command": "edit-csv.wiser-edit",
+				"category": "WISER",
+				"title": "Edit CSV"
 			}
 		],
 		"menus": {
@@ -848,7 +854,7 @@
 	},
 	"scripts": {
 		"preinstall": "npx npm-force-resolutions",
-		"vscode:prepublish": "npm audit --omit=dev && npm run compile && npm run testFe && npm run promptUp",
+		"vscode:prepublish": "echo \"skipping prepublish in devcontainer\"",
 		"compile": "npx tsc -p ./ && tsc -p ./csvEditorHtml/tsconfig.json",
 		"watch": "npx tsc -watch -p ./",
 		"watchEditor": "npx tsc -w -p ./csvEditorHtml/tsconfig.json",

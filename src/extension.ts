@@ -92,6 +92,10 @@ export function activate(context: vscode.ExtensionContext) {
 		createNewEditorInstance(context, vscode.window.activeTextEditor, instanceManager)
 	})
 
+	const wiserEditCsvCommand = vscode.commands.registerCommand('edit-csv.wiser-edit', (uri?: vscode.Uri) => {
+		vscode.commands.executeCommand('edit-csv.edit', uri)
+	})
+
 	//only use this programmatically to open the editor with the given config
 	const editCsvWithConfigCommand = vscode.commands.registerCommand('edit-csv.editWithConfig', (overwriteConfigObj: EditCsvConfigOverwrite | undefined) => {
 
@@ -189,6 +193,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const onDidChangeConfigurationHandler = vscode.workspace.onDidChangeConfiguration(onDidChangeConfigurationCallback)
 
 	context.subscriptions.push(editCsvCommand)
+	context.subscriptions.push(wiserEditCsvCommand)
 	context.subscriptions.push(editCsvWithConfigCommand)
 	context.subscriptions.push(gotoSourceCsvCommand)
 	context.subscriptions.push(applyCsvCommand)
